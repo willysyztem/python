@@ -2,7 +2,6 @@
 # 3354913
 # Professor: Alex Afanasyev
 # Class: CNT4713 RVC 1208
-# https://users.cs.fiu.edu/~afanasyev/classes/fall20/CNT-4713/project-1-accio-client.html
 
 import socket, sys, os, time
         
