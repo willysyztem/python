@@ -24,7 +24,7 @@ def main():
         s.settimeout(timeout)
         s.connect((hostname, port))
         reply = s.recv(16)
-        
+        #print("Message from server: \n {}".format(reply))
         if(reply == "accio\r\n"):
             while True:
                 data = file.read(1024)
