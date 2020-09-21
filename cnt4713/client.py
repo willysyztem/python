@@ -39,7 +39,7 @@ def main():
         sys.stderr.write("ERROR: (Error: timed out)")
         sys.exit(1)
     except socket.gaierror:
-        sys.stderr.write("ERROR: (Error: connection could not be stablished.)")
+        sys.stderr.write("ERROR: (Error: connection could not be established.)")
         sys.exit(1)
     
     s.close()
