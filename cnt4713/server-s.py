@@ -15,34 +15,33 @@ def main():
     if(port not in range(0, 65535)):
         sys.stderr.write("ERROR: (port must be 0-65535.)")
         exit(1)
-    s = socket.socket()
     
-    try:
-        s.bind(("0.0.0.0", port))
-        s.listen(10)
-    except socket.error:
-        sys.stderr.write("ERROR: (Error: connection could not be stablished.)")
-        exit(1)
-        
+    s = socket.socket()
+    s.bind(("0.0.0.0", port))
+    s.listen(10)
+    
     while totalConnected < allowedConnections:
-        fullData = ""
+        #print("Waiting for connection...")
         try:
-            print("Waiting for connection...")
+            totalData = 0
             connection, address = s.accept()
-            print("Connected to {} on port {}".format(address[0], address[1]))
+            #print("Connected to {} on port {}".format(address[0], address[1]))
             connection.settimeout(10)
+
             connection.send(str.encode("accio\r\n"))
+            
             while True:
-                data = connection.recv(1024).decode("utf-8")
+                data = len(connection.recv(1024))
                 if not data:
                     break
-                fullData += data
-            print(len(fullData))
-        except socket.timeout:
-            sys.stderr.write("ERROR\n")
-        finally:
+                totalData += data
+
+            print(totalData)
             connection.close()
+        except socket.timeout:
+            sys.stderr.write("ERROR")
         totalConnected += 1
+        
 
 if __name__ == '__main__':
     main()

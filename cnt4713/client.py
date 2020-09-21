@@ -2,8 +2,9 @@
 # 3354913
 # Professor: Alex Afanasyev
 # Class: CNT4713 RVC 1208
+# Accio Client
 
-import socket, sys, os, time
+import socket, sys
         
 def main():
     args = sys.argv[1:]
@@ -12,36 +13,37 @@ def main():
     port = int((args[1]))
     filename = args[2]
     
-    file = open(filename, 'rb')
-    timeout = 10.0
+    if(port not in range(0, 65535)):
+        sys.stderr.write("ERROR: (port must be 0-65535.)")
+        sys.exit(1)
 
     try:
-        if(port not in range(0, 65535)):
-            sys.stderr.write("ERROR: (port must be 0-65535.)")
-            exit(1)
-        
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(timeout)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 2048)
+        s.settimeout(10)
         s.connect((hostname, port))
-        reply = s.recv(16)
+
+        response = ""
+        while "accio\r\n" not in response:
+            chunk = s.recv(1).decode("utf-8")
+            response += chunk
+            
         #print("Message from server: \n {}".format(reply))
-        if(reply == "accio\r\n"):
-            while True:
-                data = file.read(1024)
-                if not data:
-                    break
-                s.sendall(data)
-    
+        if(response == "accio\r\n"):
+            with open(filename, "rb") as file:
+                data = file.read(2048)
+                while data:
+                    s.send(data)
+                    data = file.read(2048)
     except socket.timeout:
         sys.stderr.write("ERROR: (Error: timed out)")
-        exit(1)
-    except socket.error:
+        sys.exit(1)
+    except socket.gaierror:
         sys.stderr.write("ERROR: (Error: connection could not be stablished.)")
-        exit(1)
-    finally:
-        file.close()
-        s.shutdown(socket.SHUT_RDWR)
-        s.close()
+        sys.exit(1)
+    
+    s.close()
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
