@@ -58,10 +58,10 @@ def socketRecv(conn, connID):
 
 def writeToFile(totalData, connID):
     path = sys.argv[2][1:]
-    try:
+
+    # could cause race condition.
+    if not os.path.exists(path):
         os.mkdir(path)
-    except OSError:
-        pass  # not handling if path created already exist.
 
     path = f"{path}/{connID}"
     filename = open(path, "w")
